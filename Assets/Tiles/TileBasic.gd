@@ -2,6 +2,7 @@ extends Node2D
 class_name tileBasic
 
 signal gen_ready
+var processing = false
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -10,9 +11,9 @@ var x = 0
 var y = 0
 var a_x = 0
 var a_y = 0
-var state = 1
+var state = 0
 var parent
-var disconnected_states = [-1, 0]
+var disconnected_states = [-1]
 
 onready var hitbox = $Hitbox
 
@@ -44,6 +45,8 @@ func _ready():
 func setSize(val):
 	$Sprite.texture.width = val
 	$Sprite.texture.height = val
+	$Hitbox/CollisionShape2D.shape.extents.x = val/2
+	$Hitbox/CollisionShape2D.shape.extents.y = val/2
 func on_click():
 	match state:
 		0:
@@ -61,11 +64,19 @@ func on_click():
 func _process(_delta):
 	self.global_position.x = x
 	self.global_position.y = y
+	if state == 3:
+		self.modulate = Color(0, 1, 1, 1)
+	if state == 2:
+		self.modulate = Color(1, 0, 1, 1)
 	if state == 1:
-		self.modulate = Color(1, 1, 1, 1)
+		self.modulate = Color(1, 1, 0, 1)
 	if state == 0:
+		self.modulate = Color(1, 1, 1, 1)
+	if state == -1:
 		self.modulate = Color(1, 1, 1, 0.15)
-	genConnectors()
+	if processing:
+		self.modulate = Color(0, 1, 0, 1)
+	#genConnectors()
 func genConnectors():
 	var i = 0
 	for dir in dirs:
@@ -95,9 +106,14 @@ func get_neighbours():
 
 
 func gen_state(visited, lastState = 0):
+	processing = true
 	if self in visited:
 #		self.state = visited[visited.size()-1].state
+#		$Timer.stop()
+#		$Timer.start()
+#		yield($Timer, "timeout")
 		emit_signal("gen_ready")
+		processing = false
 		return
 	visited.append(self)
 	var neigh = self.get_neighbours()[0]
@@ -108,18 +124,27 @@ func gen_state(visited, lastState = 0):
 		0:
 			state = 1
 		1:
-			state = 1
+			state = 0
 		2:
 			state = 0
 		3:
-			state = 1
+			state = 0
+		4:
+			state = 2
+		5:
+			state = 0
+		6:
+			state = 0
 	var last = visited[visited.size()-2]
 	if last == self:
 		last = visited[0]
-	self.state = lastState
+	#self.state = lastState
 	$Timer.stop()
 	$Timer.start()
 	yield($Timer, "timeout")
 	for n in neigh:
+		processing = false
 		n.gen_state(visited, self.state)
+		processing = true
+	processing = false
 	emit_signal("gen_ready")

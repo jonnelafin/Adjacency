@@ -8,10 +8,10 @@ var debug_neighbour_reports = true
 
 var data = {}
 var tiles = []
-var tile_size = 32*2
-var w = 10
-var h = 6
-var gap = 32
+var tile_size = 32
+var w = 16
+var h = 6*2
+var gap = 0
 
 const tile_prefab = preload("res://Assets/Tiles/TileBasic.tscn");
 
@@ -23,11 +23,12 @@ func rand():
 	return true
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	h = w
 	for i in range(w):
 		for i2 in range(h):
 			var x = i*(tile_size+gap)+tile_size/2
 			var y = i2*(tile_size+gap)+tile_size/2
-			if rand():
+			if true || rand():
 				data[[x, y]] = [x, y, [i, i2]]
 func find(i, i2, tils):
 	for x in tils:
