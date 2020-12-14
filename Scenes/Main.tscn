@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Scenes/Field.gd" type="Script" id=1]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Field" type="Node2D" parent="."]
+script = ExtResource( 1 )
+
+[node name="FPSLabel" type="Label" parent="Field"]
+margin_left = 963.952
+margin_top = 16.9271
+margin_right = 1003.95
+margin_bottom = 30.9271
+text = "FPS"
+__meta__ = {
+"_edit_use_anchors_": false
+}
