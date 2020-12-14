@@ -3,6 +3,7 @@ class_name tileBasic
 
 signal gen_ready
 var processing = false
+var numop = 0
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -107,13 +108,16 @@ func get_neighbours():
 
 func gen_state(visited, lastState = 0):
 	processing = true
+	numop += 1
 	if self in visited:
 #		self.state = visited[visited.size()-1].state
 #		$Timer.stop()
 #		$Timer.start()
 #		yield($Timer, "timeout")
 		emit_signal("gen_ready")
-		processing = false
+		numop -= 1
+		if numop < 1:
+			processing = false
 		return
 	visited.append(self)
 	var neigh = self.get_neighbours()[0]
@@ -146,5 +150,7 @@ func gen_state(visited, lastState = 0):
 		processing = false
 		n.gen_state(visited, self.state)
 		processing = true
-	processing = false
+	numop -= 1
+	if numop < 1:
+		processing = false
 	emit_signal("gen_ready")
