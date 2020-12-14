@@ -2,6 +2,7 @@ extends Node2D
 class_name tileBasic
 
 signal gen_ready
+signal gen_ready_outer
 var processing = false
 var numop = 0
 # Declare member variables here. Examples:
@@ -56,6 +57,7 @@ func on_click():
 			state = 0
 	print("Click on " + str([a_x, a_y]) + " = " + str(state))
 	var visited = []
+	parent.last_tile = self
 	gen_state(visited, state)
 	yield(self, "gen_ready")
 	#print(visited)
@@ -138,7 +140,7 @@ func gen_state(visited, lastState = 0):
 		1:
 			state = 0
 		2:
-			state = 0
+			state = -1
 		3:
 			state = 2
 		4:
@@ -162,4 +164,5 @@ func gen_state(visited, lastState = 0):
 	if numop < 1:
 		processing = false
 	emit_signal("gen_ready")
+	emit_signal("gen_ready_outer")
 	genConnectors()

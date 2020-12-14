@@ -13,6 +13,8 @@ var w = 16
 var h = 6*2
 var gap = 0
 
+var last_tile = ""
+
 const tile_prefab = preload("res://Assets/Tiles/TileBasic.tscn");
 
 onready var fps_label = $FPSLabel
@@ -49,6 +51,17 @@ func reverseFind(tile):
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	fps_label.text = str(Engine.get_frames_per_second())
+	if Input.is_action_just_pressed("ui_accept"):
+		if str(last_tile) != "":
+			for i in range(10):
+				var state = 0
+				match last_tile.state:
+					0:
+						state = 1
+					1:
+						state = 0
+				last_tile.gen_state([], last_tile.state)
+				yield(last_tile, "gen_ready_outer")
 	if Input.is_action_just_pressed("ui_reload"):
 		for i in get_children():
 			if i != fps_label:
@@ -56,6 +69,10 @@ func _process(_delta):
 		data = {}
 		tiles = []
 		_ready()
+	if Input.is_action_just_pressed("ui_soft_reload"):
+		for i in tiles:
+			i.state = 0
+			i.genConnectors()
 	if Input.is_action_just_pressed("ui_debug"):
 		print("Data: ")
 		print(data)
