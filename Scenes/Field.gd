@@ -53,7 +53,7 @@ func _process(_delta):
 	fps_label.text = str(Engine.get_frames_per_second())
 	if Input.is_action_just_pressed("ui_accept"):
 		if str(last_tile) != "":
-			for i in range(10):
+			for i in range(1):
 				var state = 0
 				match last_tile.state:
 					0:
