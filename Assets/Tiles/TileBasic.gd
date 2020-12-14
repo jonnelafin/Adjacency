@@ -130,9 +130,9 @@ func gen_state(visited, lastState = 0):
 		-3:
 			state = -1
 		-2:
-			state = -1
-		-1:
 			state = 0
+		-1:
+			state = -1
 		0:
 			state = 1
 		1:
