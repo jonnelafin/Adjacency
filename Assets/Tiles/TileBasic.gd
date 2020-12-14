@@ -16,6 +16,7 @@ var a_y = 0
 var state = 0
 var parent
 var disconnected_states = [-1]
+var possible = []
 
 onready var hitbox = $Hitbox
 
@@ -97,6 +98,7 @@ func report():
 	return "Tile report: x" + str(a_x) + ", y" + str(a_y) + ", stat" + str(state) + ", pos" + str([x, y])
 func get_neighbours():
 	var out = []
+	var out2 = []
 	var logz = ""
 	for dir in dirs:
 		var dx = dir[0]
@@ -105,7 +107,10 @@ func get_neighbours():
 		var neighbour = parent.find_a(a_x+dx, a_y+dy, parent.tiles)
 		if str(neighbour) != "" and is_instance_valid(neighbour): # and not (neighbour.state in disconnected_states)
 			out.append(neighbour)
-	return [out, logz]
+			out2.append(neighbour)
+		else:
+			out2.append("")
+	return [out, logz, out2]
 
 
 func gen_state(visited, lastState = 0):
@@ -123,36 +128,40 @@ func gen_state(visited, lastState = 0):
 		return
 	visited.append(self)
 	var neigh = self.get_neighbours()[0]
-	var sum = 0
-	for n in neigh:
-		sum += n.state
-	match sum:
-		-4:
-			state = 0
-		-3:
-			state = -1
-		-2:
-			state = 0
-		-1:
-			state = -1
-		0:
-			state = 1
-		1:
-			state = 0
-		2:
-			state = -1
-		3:
-			state = 2
-		4:
-			state = -1
-		5:
-			state = 0
-		6:
-			state = 0
+	var neighfill = self.get_neighbours()[2]
+#	var sum = 0
+#	for n in neigh:
+#		sum += n.state
+#	match sum:
+#		-4:
+#			state = 0
+#		-3:
+#			state = -1
+#		-2:
+#			state = 0
+#		-1:
+#			state = -1
+#		0:
+#			state = 1
+#		1:
+#			state = 0
+#		2:
+#			state = -1
+#		3:
+#			state = 2
+#		4:
+#			state = -1
+#		5:
+#			state = 0
+#		6:
+#			state = 0
 	var last = visited[visited.size()-2]
 	if last == self:
 		last = visited[0]
 	#self.state = lastState
+	self.possible = Ruleset.getAvailable(neighfill, [-1, 3]) #0, 1
+	if possible.size() > 0:
+		self.state = possible[0]
 	$Timer.stop()
 	$Timer.start()
 	yield($Timer, "timeout")
