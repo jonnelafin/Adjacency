@@ -125,6 +125,14 @@ func gen_state(visited, lastState = 0):
 	for n in neigh:
 		sum += n.state
 	match sum:
+		-4:
+			state = 0
+		-3:
+			state = -1
+		-2:
+			state = -1
+		-1:
+			state = 0
 		0:
 			state = 1
 		1:
@@ -132,9 +140,9 @@ func gen_state(visited, lastState = 0):
 		2:
 			state = 0
 		3:
-			state = 0
-		4:
 			state = 2
+		4:
+			state = -1
 		5:
 			state = 0
 		6:
@@ -154,3 +162,4 @@ func gen_state(visited, lastState = 0):
 	if numop < 1:
 		processing = false
 	emit_signal("gen_ready")
+	genConnectors()
