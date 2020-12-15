@@ -75,7 +75,8 @@ func _process(_delta):
 			i.genConnectors()
 	if Input.is_action_just_pressed("ui_debug"):
 		print("Data: ")
-		print(data)
+		print("Use debugger to read data")
+		#print(data)
 		print("Find on 3, 2:")
 		var fnd = find_a(3, 2, tiles)
 		print(fnd)
@@ -90,6 +91,9 @@ func _process(_delta):
 					print("  " + z.report())
 				print("log: ")
 				print(reports[1])
+			print("Possible next states: " + str(fnd.possible))
+			print("Rulelog: ")
+			print(fnd.possible_log)
 		else:
 			print("It seems as if that tile is not valid...")
 		var is_empty_string = (str(fnd) == "")

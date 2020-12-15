@@ -13,10 +13,11 @@ var x = 0
 var y = 0
 var a_x = 0
 var a_y = 0
-var state = 0
+var state = -1
 var parent
 var disconnected_states = [-1]
 var possible = []
+var possible_log = ""
 
 onready var hitbox = $Hitbox
 
@@ -159,7 +160,9 @@ func gen_state(visited, lastState = 0):
 	if last == self:
 		last = visited[0]
 	#self.state = lastState
-	self.possible = Ruleset.getAvailable(neighfill, [-1, 3]) #0, 1
+	var poss = Ruleset.getAvailable(neighfill, [0, -1]) #0, 1
+	self.possible_log = poss[1]
+	self.possible = poss[0]
 	if possible.size() > 0:
 		self.state = possible[0]
 	$Timer.stop()
