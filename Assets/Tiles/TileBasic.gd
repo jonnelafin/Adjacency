@@ -16,9 +16,11 @@ var a_y = 0
 var state = -1
 var parent
 var disconnected_states = [-1]
-var possible = []
+var possible = [0, 1, 2, 3, 4, -1]
 var possible_log = ""
 var future_size = ""
+
+var ready = false
 
 onready var hitbox = $Hitbox
 
@@ -38,6 +40,11 @@ var dirs = [
 
 var dirs_meaning = []
 
+func _reset():
+	self.possible = [0, 1, 2, 3, 4, -1]
+	self.state = -1
+	self.ready = false
+	
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	hitbox.parent = self
@@ -69,14 +76,14 @@ func setSize(val):
 	$Hitbox/CollisionShape2D.shape.extents.x = val/2
 	$Hitbox/CollisionShape2D.shape.extents.y = val/2
 	if len(Sprites) > 0: #is_instance_valid(Sprites) and 
-		print(Sprites)
+#		print(Sprites)
 		for i in Sprites:
-			print(i)
+#			print(i)
 			var line = i.get_child(0)
 			var points = line.points
 			for ind in range(len(points)):
 				var p = points[ind]
-				print(p.x)
+#				print(p.x)
 				if p.x > 0:
 					p.x = val / 2
 				if p.x < 0:
@@ -106,11 +113,13 @@ func on_click():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	if str(future_size) != "":
-		print("Trying to set size to: " + str(future_size))
+		#print("Trying to set size to: " + str(future_size))
 		setSize(int(future_size))
 		future_size = ""
 	self.global_position.x = x
 	self.global_position.y = y
+	if state == 4:
+		self.modulate = Color(1, 0, 0, 1)
 	if state == 3:
 		self.modulate = Color(0, 1, 1, 1)
 	if state == 2:
@@ -203,14 +212,14 @@ func gen_state(visited, _lastState = 0):
 	if last == self:
 		last = visited[0]
 	#self.state = lastState
-	var poss = Ruleset.getAvailable(neighfill, [0, -1]) #0, 1
+	var poss = Ruleset.getAvailable(neighfill, self.possible) #[0, 1, 2, 3, 4, -1]
 	self.possible_log = poss[1]
 	self.possible = poss[0]
-	if possible.size() > 0:
-		self.state = possible[0]
-	$Timer.stop()
-	$Timer.start()
-	yield($Timer, "timeout")
+#	if possible.size() > 0:
+#		self.state = possible[0]
+	#$Timer.stop()
+	#$Timer.start()
+	#yield($Timer, "timeout")
 	for n in neigh:
 		processing = false
 		n.gen_state(visited, self.state)

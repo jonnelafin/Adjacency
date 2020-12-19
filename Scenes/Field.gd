@@ -13,6 +13,7 @@ var w = 16
 var h = 6*2
 var gap = 0
 
+
 var last_tile = ""
 
 const tile_prefab = preload("res://Assets/Tiles/TileBasic.tscn");
@@ -53,14 +54,23 @@ func _process(_delta):
 	fps_label.text = str(Engine.get_frames_per_second())
 	if Input.is_action_just_pressed("ui_accept"):
 		if str(last_tile) != "":
+			var ignore = []
 			for i in range(1):
-				var state = 0
-				match last_tile.state:
-					0:
-						state = 1
-					1:
-						state = 0
 				last_tile.gen_state([], last_tile.state)
+				var lowest_s = 9999999
+				var lowest = ""
+				for t in tiles:
+					if is_instance_valid(t) and len(t.possible) < lowest_s and (not (t in ignore)) and t.ready != true:
+						lowest_s = len(t.possible)
+						lowest = t
+				if lowest_s > 0:
+					lowest.state = lowest.possible[0]
+					lowest.ready = true
+					print(lowest.possible)
+					#ignore.append(lowest)
+				else:
+					ignore.append(lowest)
+					lowest.state = -1
 				yield(last_tile, "gen_ready_outer")
 	if Input.is_action_just_pressed("ui_reload"):
 		for i in get_children():
@@ -71,7 +81,7 @@ func _process(_delta):
 		_ready()
 	if Input.is_action_just_pressed("ui_soft_reload"):
 		for i in tiles:
-			i.state = 0
+			i.reset()
 			i.genConnectors()
 	if Input.is_action_just_pressed("ui_debug"):
 		print("Data: ")

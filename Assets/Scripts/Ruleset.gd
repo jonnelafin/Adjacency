@@ -1,7 +1,7 @@
 extends Node
 
 
-const all = [-1, 0, 1, 2]
+const all = [-1, 0, 1, 2, 3, 4]
 const any = -100
 const x = any
 
@@ -16,14 +16,22 @@ const x = any
 #}
 
 var possible = {
-	-1: [[0, 0, 0, 0]],
-	0: [[-1, x, x, x],[x, x, -1, x],],
-	1: [[5, 5, 5, 5]]
+	-1: [[x, x, x, x]],
+	0: [[-1, x, -1, x]],
+	1: [[-1, -1, x, x]],
+	2: [[-1, x, x, -1]],
+	3: [[x, -1, x, -1]], #[[x, -1, x, -1]],
+	4: [[x, -1, -1, x]]
 }
 
 var forbidden = {
-	[0, possible[0][0]]: [x, -1, -1, -1],
-	[0, possible[0][1]]: [-1, -1, x, -1],
+#	[0, possible[0][0]]: [x, -1, -1, -1],
+#	[0, possible[0][1]]: [-1, -1, x, -1],
+	[0, possible[0][0]]: [[0, 0, 0, 0], [x, 2, 4, x], [x, -1, x, -1]],
+	[2, possible[2][0]]: [[2, 2, 2, 2], [x, 0, 3, x], [x, -1, -1, x]],
+
+	[3, possible[3][0]]: [[3, 3, 3, 3], [4, 4, x, x]],
+	[4, possible[4][0]]: [[4, 4, 4, 4], [3, 3, x, x]],
 }
 
 
@@ -40,13 +48,14 @@ func getAvailable(neighbours = [], available = []):
 			if str(n) != "":
 				for r in ruleset:
 					var s = r[ni]
-					var anti = any
+					var anti = []
 					var fullanti = []
 					if forbidden.has([i, r]):
 						fullanti = forbidden[[i, r]]
-						anti = fullanti[ni]
+						for a in fullanti:
+							anti.append(a[ni])
 					logz += "using anti" + str(anti) + "\n"
-					if anti == n.state and anti != any:
+					if n.state in anti: # and anti != any
 						possible = false
 						possible_overide = false
 						logz += "antipattern" + str(fullanti) + " matched neighbor" + str(n) + " at index" + str(ni) + "(" + str(anti) + "==" + str(n.state) + ")\n"
