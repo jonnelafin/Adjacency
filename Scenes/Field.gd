@@ -111,12 +111,13 @@ func _process(_delta):
 		var tile = find(x, y, tiles)
 		if str(tile) == "":
 			var tileisnt = tile_prefab.instance()
-			tileisnt.setSize(tile_size)
+			#tileisnt.setSize(tile_size)
 			tileisnt.x = x
 			tileisnt.y = y
 			tileisnt.a_x = actuals[0]
 			tileisnt.a_y = actuals[1]
 			tileisnt.parent = self
+			tileisnt.future_size = tile_size
 			self.add_child(tileisnt)
 			tiles.append(tileisnt)
 			tileisnt.genConnectors()

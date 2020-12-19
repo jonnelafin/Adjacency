@@ -18,6 +18,7 @@ var parent
 var disconnected_states = [-1]
 var possible = []
 var possible_log = ""
+var future_size = ""
 
 onready var hitbox = $Hitbox
 
@@ -25,6 +26,8 @@ onready var conn_up = $Connectors/Up
 onready var conn_down = $Connectors/Down
 onready var conn_left = $Connectors/Left
 onready var conn_right = $Connectors/Right
+
+var Sprites
 
 var dirs = [
 	[0, -1],
@@ -44,13 +47,48 @@ func _ready():
 		conn_left,
 		conn_right
 	]
-	genConnectors()
+	Sprites = [
+		$Sprites/RD,
+		$Sprites/RL,
+		$Sprites/DL,
+		$Sprites/LU,
+		$Sprites/UR,
+	]
+	if is_instance_valid(parent):
+		genConnectors()
+	#setSize(500)
+
+func toggleLook(ind):
+	for i in Sprites:
+		i.visible = false
+	Sprites[ind].visible = true
 
 func setSize(val):
 	$Sprite.texture.width = val
 	$Sprite.texture.height = val
 	$Hitbox/CollisionShape2D.shape.extents.x = val/2
 	$Hitbox/CollisionShape2D.shape.extents.y = val/2
+	if len(Sprites) > 0: #is_instance_valid(Sprites) and 
+		print(Sprites)
+		for i in Sprites:
+			print(i)
+			var line = i.get_child(0)
+			var points = line.points
+			for ind in range(len(points)):
+				var p = points[ind]
+				print(p.x)
+				if p.x > 0:
+					p.x = val / 2
+				if p.x < 0:
+					p.x = -val / 2
+				if p.y > 0:
+					p.y = val / 2
+				if p.y < 0:
+					p.y = -val / 2
+				points[ind] = p
+			line.points = points
+	else:
+		print("Warning: tile has not yet been loaded, setting the size won't work!")
 func on_click():
 	match state:
 		0:
@@ -67,6 +105,10 @@ func on_click():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
+	if str(future_size) != "":
+		print("Trying to set size to: " + str(future_size))
+		setSize(int(future_size))
+		future_size = ""
 	self.global_position.x = x
 	self.global_position.y = y
 	if state == 3:
@@ -81,6 +123,7 @@ func _process(_delta):
 		self.modulate = Color(1, 1, 1, 0.15)
 	if processing:
 		self.modulate = Color(0, 1, 0, 1)
+	toggleLook(self.state)
 	#genConnectors()
 func genConnectors():
 	var i = 0
@@ -114,7 +157,7 @@ func get_neighbours():
 	return [out, logz, out2]
 
 
-func gen_state(visited, lastState = 0):
+func gen_state(visited, _lastState = 0):
 	processing = true
 	numop += 1
 	if self in visited:
